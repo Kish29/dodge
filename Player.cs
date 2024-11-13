@@ -1,6 +1,8 @@
 using Godot;
 using System;
 
+namespace dodge;
+
 public partial class Player : Area2D
 {
     private const string MoveUpKey = "move_up";
@@ -15,7 +17,7 @@ public partial class Player : Area2D
     [Export]
     public int Speed { get; set; } = 400;
     [Signal]
-    public delegate void HitEventHandler();
+    public delegate void PlayerBodyHitEventHandler();
 
     public Vector2 ScreenSize;
 
@@ -24,13 +26,19 @@ public partial class Player : Area2D
     private float _width;
     private float _height;
 
+    public void Start(Vector2 pos)
+    {
+        SetPosition(pos);
+        Show();
+        // 能够碰撞
+        _collision.SetDisabled(false);
+    }
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         ScreenSize = GetViewportRect().Size;
-        // move to center
-        Position = new Vector2(ScreenSize.X / 2f, ScreenSize.Y / 2f);
-        // Hide();
+        Hide();
         InitializeWidthHeight();
     }
 
@@ -50,12 +58,9 @@ public partial class Player : Area2D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        if (_animate == null)
-        {
-            return;
-        }
+        if (_animate == null) return;
 
-        var offset = GetProperVelocity();
+        var offset = GetProperVelocity(delta);
         var bias = offset.Length();
         if (bias <= 0f)
         {
@@ -97,33 +102,34 @@ public partial class Player : Area2D
         );
     }
 
-    private Vector2 GetProperVelocity()
+    private Vector2 GetProperVelocity(double delta)
     {
         var velocity = Vector2.Zero;
         var inputPressed = false;
 
+        float actualOffset = (float)(1 * delta);
         if (Input.IsActionPressed(MoveUpKey))
         {
             inputPressed = true;
-            velocity.Y -= 1;
+            velocity.Y -= actualOffset;
         }
 
         if (Input.IsActionPressed(MoveDownKey))
         {
             inputPressed = true;
-            velocity.Y += 1;
+            velocity.Y += actualOffset;
         }
 
         if (Input.IsActionPressed(MoveLeftKey))
         {
             inputPressed = true;
-            velocity.X -= 1;
+            velocity.X -= actualOffset;
         }
 
         if (Input.IsActionPressed(MoveRightKey))
         {
             inputPressed = true;
-            velocity.X += 1;
+            velocity.X += actualOffset;
         }
 
         if (inputPressed)
@@ -132,5 +138,16 @@ public partial class Player : Area2D
         }
 
         return velocity;
+    }
+
+    // 注意函数签名的正确性
+    // 接收Player body entered的事件
+    public void OnBodyEntered(Node2D _)
+    {
+        Hide();
+        // 发出Player hit的信号, 以便其他地方能够接收
+        EmitSignal(SignalName.PlayerBodyHit);
+        // 由于我们无法在回调中修改物理属性，所以将属性推迟到帧结束时修改
+        _collision.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
     }
 }

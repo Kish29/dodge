@@ -48,3 +48,5 @@ animation = &"walk"
 
 [node name="PlayerCL" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_6g4bd")
+
+[connection signal="body_entered" from="." to="." method="OnBodyEntered"]
