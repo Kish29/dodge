@@ -45,10 +45,10 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_csuqc"]
-radius = 36.0
-height = 98.0
+radius = 24.0
+height = 66.0
 
-[node name="Mob" type="RigidBody2D"]
+[node name="Mob" type="RigidBody2D" groups=["mobs"]]
 position = Vector2(317, 316)
 collision_mask = 0
 gravity_scale = 0.0
@@ -56,9 +56,9 @@ script = ExtResource("1_evp7l")
 metadata/_edit_group_ = true
 
 [node name="EnemyAM" type="AnimatedSprite2D" parent="."]
-scale = Vector2(0.75, 0.75)
+scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_gqh67")
-animation = &"flying"
+animation = &"walking"
 
 [node name="EnemyCL" type="CollisionShape2D" parent="."]
 rotation = 1.5708

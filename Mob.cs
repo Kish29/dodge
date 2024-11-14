@@ -47,4 +47,10 @@ public partial class Mob : RigidBody2D
         RemoveChild(_animate);
         RemoveChild(_collision);
     }
+
+    public async void TowardsDelay(Vector2 pos, double seconds)
+    {
+        await ToSignal(GetTree().CreateTimer(seconds), SceneTreeTimer.SignalName.Timeout);
+        SetLinearVelocity(pos);
+    }
 }

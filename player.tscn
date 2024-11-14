@@ -39,7 +39,7 @@ height = 136.0
 position = Vector2(202, 261)
 scale = Vector2(0.5, 0.5)
 script = ExtResource("1_3fmcb")
-Speed = 2
+Speed = 5
 metadata/_edit_group_ = true
 
 [node name="PlayerAM" type="AnimatedSprite2D" parent="."]
